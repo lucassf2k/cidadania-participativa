@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "937839443968",
+    "project_id": "cidadnia-ativa",
+    "storage_bucket": "cidadnia-ativa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937839443968:android:7235003f290cfba7bc18e5",
+        "android_client_info": {
+          "package_name": "com.example.cidadania_participativa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937839443968-lol7na1s0s1vskkctu121uuqccdcaish.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN9RawoczLhSRLR0fnY_9y3t-fUHJQuD0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937839443968-lol7na1s0s1vskkctu121uuqccdcaish.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
