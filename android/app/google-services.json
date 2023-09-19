@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "937839443968",
+    "firebase_url": "https://cidadnia-ativa-default-rtdb.firebaseio.com",
     "project_id": "cidadnia-ativa",
     "storage_bucket": "cidadnia-ativa.appspot.com"
   },
@@ -14,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "937839443968-lol7na1s0s1vskkctu121uuqccdcaish.apps.googleusercontent.com",
+          "client_id": "937839443968-c0m1u38jrq3rjn554iqk4uqm6d88mdq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cidadania_participativa",
+            "certificate_hash": "b4c6508df6b8077accebecb27e51cf49348c6ae1"
+          }
+        },
+        {
+          "client_id": "937839443968-a45hos39ovod3mkdj25873s65abrvdl6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +36,15 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "937839443968-lol7na1s0s1vskkctu121uuqccdcaish.apps.googleusercontent.com",
+              "client_id": "937839443968-a45hos39ovod3mkdj25873s65abrvdl6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "937839443968-52ak761cspfq3grvpfegf4lusg02phc2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cidadaniaParticipativa.RunnerTests"
+              }
             }
           ]
         }
