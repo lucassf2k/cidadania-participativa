@@ -16,3 +16,5 @@ Future push(BuildContext context, Widget page, {bool flagBack = true}) {
     }));
   }
 }
+
+void pop(BuildContext context) => Navigator.pop(context);
