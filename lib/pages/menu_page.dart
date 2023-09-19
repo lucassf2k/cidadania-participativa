@@ -1,16 +1,19 @@
 import 'package:cidadania_participativa/controllers/ReportController.dart';
-import 'package:cidadania_participativa/entity/report.dart';
+import 'package:cidadania_participativa/core/button.dart';
+import 'package:cidadania_participativa/models/report.dart';
 import 'package:cidadania_participativa/firebase/facade_firebase_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MainMenu extends StatefulWidget {
+import '../core/app_colors.dart';
+
+class MenuPage extends StatefulWidget {
 
   @override
-  _MainMenuState createState() => _MainMenuState();
+  _MenuPageState createState() => _MenuPageState();
 }
 
-class _MainMenuState extends State<MainMenu> {
+class _MenuPageState extends State<MenuPage> {
   final fbFirestore = FacadeFirebaseFirestore();
   late String str = "";
 
@@ -23,8 +26,8 @@ class _MainMenuState extends State<MainMenu> {
       //child: Obx( () => controller.existing_reports.value ? defined_reports() : undefined_reports()),
       child: Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color(0x00d90429),
-            foregroundColor: const Color(0x00d90429),
+            title: const Text("Cidadania Parcipativa"),
+            backgroundColor: AppColors.menu,
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Seus Reportes'),
@@ -34,10 +37,7 @@ class _MainMenuState extends State<MainMenu> {
             ),
           ),
           body: defined_reports(),
-        floatingActionButton: ElevatedButton(
-          child: Icon(Icons.add),
-          onPressed: _onClickAddReport
-        ),
+        floatingActionButton: Button('+', () => _onClickAddReport())
         /*
       * floatingActionButton: ElevatedButton(
         onPressed: () => Get.toNamed('add_report_page'),
@@ -52,7 +52,7 @@ class _MainMenuState extends State<MainMenu> {
     //str = await fbFirestore.createReport(rep);
     setState((){});
     
-    Get.toNamed('addReportPage',);
+    Get.toNamed('add_report_page');
   }
 }
 
@@ -188,88 +188,3 @@ class undefined_reports extends StatelessWidget {
   }
 }
 */
-
-class Feedback extends StatelessWidget {
-  const Feedback({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 390,
-      height: 103,
-      child: Stack(
-        children: [
-          Positioned(
-            left: 177.17,
-            top: 0,
-            child: Container(
-              width: 212.83,
-              height: 103,
-              decoration: ShapeDecoration(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(width: 1.50, color: Color(0xFF8D99AE)),
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 182.74,
-            top: 8,
-            child: SizedBox(
-              width: 199.46,
-              height: 42,
-              child: Text(
-                'Mais um alagamento aqui meu deus, façam algo!',
-                textAlign: TextAlign.justify,
-                style: TextStyle(
-                  color: Color(0xFF2B2D42),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            top: 0,
-            child: Container(
-              width: 177.17,
-              height: 103,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage("https://via.placeholder.com/177x103"),
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 182.74,
-            top: 82,
-            child: SizedBox(
-              width: 199.46,
-              child: Text(
-                'Postado em: 19/12/2019',
-                textAlign: TextAlign.justify,
-                style: TextStyle(
-                  color: Color(0xFF2B2D42),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

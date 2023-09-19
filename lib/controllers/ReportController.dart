@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../entity/report.dart';
+import '../models/report.dart';
 
 class ReportController extends GetxController{
   late var existing_reports = false.obs;

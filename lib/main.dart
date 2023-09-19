@@ -1,5 +1,6 @@
-import 'package:cidadania_participativa/pages/addReport.dart';
-import 'package:cidadania_participativa/pages/mainMenu.dart';
+import 'package:cidadania_participativa/pages/add_report_page.dart';
+import 'package:cidadania_participativa/pages/login_page.dart';
+import 'package:cidadania_participativa/pages/menu_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,17 +21,12 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0x00d90429)),
-        primaryColor: Color(0xD90429),
-        useMaterial3: true,
-      ),
       //debugShowCheckedModeBanner: false,
-      initialRoute: '/mainMenuPage',
+      initialRoute: '/menu_page',
       getPages: [
-        GetPage(name: '/loginPage', page: () => MyHomePage(title: 'Flutter Demo Home Page')),
-        GetPage(name: '/mainMenuPage', page: () => MainMenu()),
-        GetPage(name: '/addReportPage', page: () => AddReport())
+        GetPage(name: '/login_page', page: () => LoginPage()),
+        GetPage(name: '/menu_page', page: () => MenuPage()),
+        GetPage(name: '/add_report_page', page: () => AddReportPage())
       ],
     );
   }

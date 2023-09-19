@@ -1,4 +1,4 @@
-import 'package:cidadania_participativa/entity/report.dart';
+import 'package:cidadania_participativa/models/report.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FacadeFirebaseFirestore

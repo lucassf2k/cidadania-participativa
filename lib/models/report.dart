@@ -51,4 +51,9 @@ class Report{
     data['geolocal'] = this._geolocal;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'Report{ id: $_id, Descrição: $_desc, Date: $_date, Foto: $_photo, Localização: $_geolocal}';
+  }
 }
