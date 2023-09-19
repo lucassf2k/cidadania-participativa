@@ -1,3 +1,4 @@
+import 'package:cidadania_participativa/pages/addReport.dart';
 import 'package:cidadania_participativa/pages/mainMenu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +29,8 @@ class Main extends StatelessWidget {
       initialRoute: '/mainMenuPage',
       getPages: [
         GetPage(name: '/loginPage', page: () => MyHomePage(title: 'Flutter Demo Home Page')),
-        GetPage(name: '/mainMenuPage', page: () => MainMenu())
+        GetPage(name: '/mainMenuPage', page: () => MainMenu()),
+        GetPage(name: '/addReportPage', page: () => AddReport())
       ],
     );
   }

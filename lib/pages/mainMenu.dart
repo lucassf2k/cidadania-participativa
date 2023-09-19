@@ -24,6 +24,7 @@ class _MainMenuState extends State<MainMenu> {
       child: Scaffold(
           appBar: AppBar(
             backgroundColor: const Color(0x00d90429),
+            foregroundColor: const Color(0x00d90429),
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Seus Reportes'),
@@ -35,9 +36,7 @@ class _MainMenuState extends State<MainMenu> {
           body: defined_reports(),
         floatingActionButton: ElevatedButton(
           child: Icon(Icons.add),
-          onPressed: () => GetSnackBar(
-            title: 'teste',
-          ),
+          onPressed: _onClickAddReport
         ),
         /*
       * floatingActionButton: ElevatedButton(
@@ -50,8 +49,10 @@ class _MainMenuState extends State<MainMenu> {
 
   Future<void> _onClickAddReport() async{
     Report rep = Report();
-    str = await fbFirestore.createReport(rep);
+    //str = await fbFirestore.createReport(rep);
     setState((){});
+    
+    Get.toNamed('addReportPage',);
   }
 }
 
