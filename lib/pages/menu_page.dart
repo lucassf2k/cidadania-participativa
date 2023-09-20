@@ -11,7 +11,6 @@ import 'package:image_picker/image_picker.dart';
 import '../core/app_colors.dart';
 
 class MenuPage extends StatefulWidget {
-
   @override
   _MenuPageState createState() => _MenuPageState();
 }
@@ -26,7 +25,7 @@ class _MenuPageState extends State<MenuPage> {
   late List<Report> reps = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     loadReports();
   }
@@ -36,65 +35,79 @@ class _MenuPageState extends State<MenuPage> {
     final controller = Get.put(ReportController());
 
     return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Cidadania Parcipativa"),
-            backgroundColor: AppColors.menu,
-            bottom: const TabBar(
-              tabs: [
-                Tab(text: 'Seus Reportes'),
-                Tab(text: 'Recentes'),
-                Tab(text: 'Feedbacks Escutados'),
-              ],
+        length: 3,
+        child: Scaffold(
+            appBar: AppBar(
+              title: const Text("Cidadania Parcipativa"),
+              backgroundColor: AppColors.menu,
+              bottom: const TabBar(
+                tabs: [
+                  Tab(text: 'Seus Reportes'),
+                  Tab(text: 'Recentes'),
+                  Tab(text: 'Feedbacks Escutados'),
+                ],
+              ),
             ),
-          ),
-          body: TabBarView(
-            children: [
-          ListView.builder(
-          itemCount: reps.length,
-            itemBuilder: (context, index) {
-              Report report = reps[index];
-              return Container(
-                child: Column(
-                  children: [
-                    _retornaImagem(''),
-                    Text('${reps[index].desc}'),
-                    Text('Postado em: ${reps[index].date.toString()}'),
-                    SizedBox(
-                      height: 30,
-                    )
-                  ],
-                )
-              );
-            },
-          ),
-              // Conteúdo da Aba 2
-              Center(child: Text('Conteúdo da Aba 2')),
-              // Conteúdo da Aba 3
-              Center(child: Text('Conteúdo da Aba 3')),
-            ],
-          ),
-        floatingActionButton: Button('+', () => _onClickAddReport())
-
-      )
-    );
+            body: Container(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              child: TabBarView(
+                children: [
+                  ListView.builder(
+                    itemCount: reps.length,
+                    itemBuilder: (context, index) {
+                      Report report = reps[index];
+                      return Container(
+                          child: Column(
+                        children: [
+                          _retornaImagem(report.photo),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '${report.desc}',
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child:
+                                Text('Postado em: ${report.date.toString()}'),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          )
+                        ],
+                      ));
+                    },
+                  ),
+                  // Conteúdo da Aba 2
+                  const Center(child: Text('Conteúdo da Aba 2')),
+                  // Conteúdo da Aba 3
+                  const Center(child: Text('Conteúdo da Aba 3')),
+                ],
+              ),
+            ),
+            floatingActionButton: Button('+', () => _onClickAddReport())));
   }
 
-  Future<void> _onClickAddReport() async{
+  Future<void> _onClickAddReport() async {
     Report rep = Report();
     //str = await fbFirestore.createReport(rep);
 
-    setState((){});
-    
+    setState(() {});
+
     Get.toNamed('add_report_page');
   }
 
   Future<void> loadReports() async {
-
     List<Report> reports = await fbFirestore.readReport();
 
-    setState(() { reps = reports; });
+    setState(() {
+      reps = reports;
+    });
   }
 
   Future<void> _obterUrl(TaskSnapshot taskSnapshot, String fileName) async {
@@ -104,13 +117,12 @@ class _MenuPageState extends State<MenuPage> {
     });
   }
 
-  _retornaImagem (String str){
-    if(str.isEmpty){
-      return Image.network('gs://cidadnia-ativa.appspot.com/reports_photos/PHOTO-2021-05-21-19-22-54.jpg', fit:
-        BoxFit.cover,);
+  Image _retornaImagem(String str) {
+    if (str.isEmpty) {
+      return Image.asset('assets/image-not-found.jpg',
+          height: 480, width: 480, fit: BoxFit.cover);
     } else {
-      Image.network(str, fit:
-      BoxFit.cover);
+      return Image.network(str, fit: BoxFit.cover);
     }
   }
 }
