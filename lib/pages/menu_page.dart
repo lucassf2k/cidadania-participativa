@@ -119,7 +119,7 @@ class _MenuPageState extends State<MenuPage> {
 
   Image _retornaImagem(String str) {
     if (str.isEmpty) {
-      return Image.asset('assets/image-not-found.jpg',
+      return Image.asset('assets/image-not-found.png',
           height: 480, width: 480, fit: BoxFit.cover);
     } else {
       return Image.network(str, fit: BoxFit.cover);
