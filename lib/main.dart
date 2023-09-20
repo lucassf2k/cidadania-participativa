@@ -21,3 +21,21 @@ class Application extends StatelessWidget {
     );
   }
 }
+
+/*
+class Application extends StatelessWidget {
+  Application({super.key});
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      //debugShowCheckedModeBanner: false,
+      initialRoute: '/menu_page',
+      getPages: [
+        GetPage(name: '/login_page', page: () => LoginPage()),
+        GetPage(name: '/menu_page', page: () => MenuPage()),
+        GetPage(name: '/add_report_page', page: () => AddReportPage())
+      ],
+    );
+  }
+}*/

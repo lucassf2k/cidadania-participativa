@@ -1,4 +1,4 @@
-class Report {
+class Report{
   late String? _id;
   late String? _desc;
   late var _date;
@@ -50,5 +50,10 @@ class Report {
     data['photo'] = this._photo;
     data['geolocal'] = this._geolocal;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'Report{ id: $_id, Descrição: $_desc, Date: $_date, Foto: $_photo, Localização: $_geolocal}';
   }
 }
