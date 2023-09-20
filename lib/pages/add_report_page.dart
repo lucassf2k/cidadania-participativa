@@ -31,6 +31,26 @@ class _AddReportPageState extends State<AddReportPage> {
   String? _location;
   TextEditingController _textEditingController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _requestLocationPermission();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    final permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      _getLocation();
+    } else {
+      Get.snackbar(
+        'Permissão negada',
+        'Você negou a permissão de localização.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
   final _picker = ImagePicker();
 
   @override
@@ -136,8 +156,7 @@ class _AddReportPageState extends State<AddReportPage> {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String fileName = 'report_$timestamp.jpg';
 
-    Reference pastaRaiz = fbStorage.ref();
-    Reference arquivo = pastaRaiz.child("reports_photos/$fileName");
+    Reference arquivo = fbStorage.ref().child("reports_photos/$fileName");
 
     UploadTask task = arquivo.putFile(_image!);
 

@@ -22,6 +22,7 @@ class Main extends StatelessWidget {
     return GetMaterialApp(
       //debugShowCheckedModeBanner: false,
       initialRoute: '/login_page',
+      //initialRoute: '/menu_page',
       getPages: [
         GetPage(name: '/login_page', page: () => const LoginPage()),
         GetPage(name: '/menu_page', page: () => MenuPage()),
