@@ -54,17 +54,28 @@ class _AddReportPageState extends State<AddReportPage> {
             maxLines: 5,
           ),
           SizedBox(height: 16),
-          Button('Tirar foto', () => _getImage(), colorBG: AppColors.button,),
+          Button(
+            'Tirar foto',
+            () => _getImage(),
+            colorBG: AppColors.button,
+          ),
           SizedBox(height: 16),
           if (_location != null)
             Text(
               'Localização: $_location',
               style: TextStyle(fontSize: 18),
             ),
-          Button('Obter localização', () => _getLocation(), colorBG: AppColors.button,),
+          Button(
+            'Obter localização',
+            () => _getLocation(),
+            colorBG: AppColors.button,
+          ),
           SizedBox(height: 64),
-          Button('Registrar Report', () => _postReport(), colorBG: AppColors.button,),
-
+          Button(
+            'Registrar Report',
+            () => _postReport(),
+            colorBG: AppColors.button,
+          ),
           SelectableText(str),
         ],
       ),
@@ -72,29 +83,31 @@ class _AddReportPageState extends State<AddReportPage> {
   }
 
   Future<void> _getImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      if(pickedFile != null){
+      if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
         print('Imagem não capturada');
       }
     });
   }
+
   Future<void> _getLocation() async {
-    try{
+    try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
       setState(() {
-        _location = 'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+        _location =
+            'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
       });
     } catch (e) {
       print('Erro ao obter localização: $e');
     }
   }
-  Future<void> _postReport() async {
 
+  Future<void> _postReport() async {
     if (_textEditingController.text.isEmpty) {
       return;
     }
@@ -110,8 +123,7 @@ class _AddReportPageState extends State<AddReportPage> {
           desc: _textEditingController.text,
           photo: _url,
           geolocal: _location,
-          date: _formattedDateTime
-      );
+          date: _formattedDateTime);
 
       str = await fbFirestore.createReport(rp);
 
@@ -119,12 +131,13 @@ class _AddReportPageState extends State<AddReportPage> {
       Get.toNamed('menu_page');
     }
   }
+
   Future<void> _uploadImage() async {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String fileName = 'report_$timestamp.jpg';
 
     Reference pastaRaiz = fbStorage.ref();
-    Reference arquivo = pastaRaiz.child("reports_photos").child(fileName);
+    Reference arquivo = pastaRaiz.child("reports_photos/$fileName");
 
     UploadTask task = arquivo.putFile(_image!);
 
@@ -153,4 +166,3 @@ class _AddReportPageState extends State<AddReportPage> {
     super.dispose();
   }
 }
-
