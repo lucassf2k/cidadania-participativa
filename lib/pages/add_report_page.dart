@@ -156,7 +156,7 @@ class _AddReportPageState extends State<AddReportPage> {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String fileName = 'report_$timestamp.jpg';
 
-    Reference arquivo = fbStorage.ref().child("reports_photos/$fileName");
+    Reference arquivo = fbStorage.ref().child("$fileName");
 
     UploadTask task = arquivo.putFile(_image!);
 

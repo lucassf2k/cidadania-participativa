@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../core/app_colors.dart';
 
@@ -44,7 +45,7 @@ class _MenuPageState extends State<MenuPage> {
                 tabs: [
                   Tab(text: 'Seus Reportes'),
                   Tab(text: 'Recentes'),
-                  Tab(text: 'Feedbacks Escutados'),
+                  Tab(text: 'Mapa de reportes'),
                 ],
               ),
             ),
@@ -83,9 +84,87 @@ class _MenuPageState extends State<MenuPage> {
                       ));
                     },
                   ),
-                  // Conteúdo da Aba 2
-                  const Center(child: Text('Conteúdo da Aba 2')),
-                  // Conteúdo da Aba 3
+                  ListView.builder(
+                    itemCount: reps.length,
+                    itemBuilder: (context, index) {
+                      Report report = reps[index];
+                      return Container(
+                          child: Column(
+                            children: [
+                              _retornaImagem(report.photo),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '${report.desc}',
+                                style: const TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child:
+                                Text('Postado em: ${report.date.toString()}'),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              )
+                            ],
+                          ));
+                    },
+                  ),
+                  /*ListView.builder(
+                    itemCount: reps.length,
+                    itemBuilder: (context, index) {
+                      Report report = reps[index];
+
+                      DateTime currentDate = DateTime.now();
+
+                      DateTime reportDate = DateTime.parse(
+                          DateFormat('yyyy/MM/dd HH:mm')
+                              .format(report.date)
+                      );
+
+                      bool isToday = reportDate.year == currentDate.year &&
+                          reportDate.month == currentDate.month &&
+                          reportDate.day == currentDate.day;
+
+                      if (isToday) {
+                        return Container(
+                          child: Column(
+                            children: [
+                              _retornaImagem(report.photo),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '${report.desc}',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: Text('Postado em: ${report.date.toString()}'),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              )
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),*/
+
                   const Center(child: Text('Conteúdo da Aba 3')),
                 ],
               ),
@@ -126,117 +205,3 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 }
-
-
-/*
-class defined_reports extends StatelessWidget {
-  const defined_reports({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0x00d90429),
-        bottom: const TabBar(
-          tabs: [
-            Tab(text: 'Seus Reportes'),
-            Tab(text: 'Recentes'),
-            Tab(text: 'Feedbacks Escutados'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        children: [
-          // Conteúdo da Aba 1
-          ListView(
-            children: [
-              Center(
-                child: Text('teste')
-              ),
-            ],
-          ),
-          // Conteúdo da Aba 2
-          Center(child: Text('Conteúdo da Aba 2')),
-          // Conteúdo da Aba 3
-          Center(child: Text('Conteúdo da Aba 3')),
-        ],
-      ),
-      floatingActionButton: ElevatedButton(
-        child: Icon(Icons.add),
-        onPressed: () => GetSnackBar(
-          title: 'teste',
-        ),
-      ),
-      /*
-      * floatingActionButton: ElevatedButton(
-        onPressed: () => Get.toNamed('add_report_page'),
-      ),
-      * */
-    );
-  }
-}
-
-class undefined_reports extends StatelessWidget {
-  const undefined_reports({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0x00d90429),
-        bottom: const TabBar(
-          tabs: [
-            Tab(text: 'Seus Reportes'),
-            Tab(text: 'Recentes'),
-            Tab(text: 'Feedbacks Escutados'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        children: [
-          // Conteúdo da Aba 1
-          ListView(
-            children: [
-              Center(
-                  child: Text('Não há nada por aqui')
-              ),
-            ],
-          ),
-          // Conteúdo da Aba 2
-          ListView(
-            children: [
-              Center(
-                  child: Text('Não há nada por aqui')
-              ),
-            ],
-          ),
-          // Conteúdo da Aba 3
-          ListView(
-            children: [
-              Center(
-                  child: Text('Não há nada por aqui')
-              ),
-            ],
-          ),
-        ],
-      ),
-      floatingActionButton: ElevatedButton(
-        child: Icon(Icons.add),
-        onPressed: () => GetSnackBar(
-          title: 'teste',
-          backgroundColor: Colors.white10,
-        ),
-      ),
-      /*
-      * floatingActionButton: ElevatedButton(
-        onPressed: () => Get.toNamed('add_report_page'),
-      ),
-      * */
-    );
-  }
-}
-*/
