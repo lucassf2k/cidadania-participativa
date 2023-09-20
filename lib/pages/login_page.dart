@@ -8,6 +8,7 @@ import 'package:cidadania_participativa/pages/home_page.dart';
 import 'package:cidadania_participativa/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -74,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
             Button('Criar conta', _handleAccountCreate,
                 height: 58, fontSize: 16, colorBG: AppColors.button),
             const SizedBox(height: 50),
-            Text(_status),
           ],
         ),
       ),
@@ -85,10 +85,11 @@ class _LoginPageState extends State<LoginPage> {
     print("_onClickGoogleLogin");
 
     final fbService = FacadeFirebaseService();
-    Response response = await fbService.loginGoogle();
+    var response = await fbService.loginGoogle();
 
     if (response.ok) {
-      push(context, HomePage(), flagBack: true);
+      // push(context, HomePage(), flagBack: true);
+      Get.toNamed('menu_page');
     } else {
       print("Erro: " + response.msg);
     }
@@ -103,7 +104,8 @@ class _LoginPageState extends State<LoginPage> {
     _fbAuth
         .signInWithEmailAndPassword(email: email, password: pass)
         .then((firebaseUser) async {
-      await push(context, HomePage(), flagBack: false);
+      // await push(context, HomePage(), flagBack: false);
+      Get.toNamed('menu_page');
     }).catchError((erro) {
       setState(() {
         _status = "Erro no login: " + erro.toString();
