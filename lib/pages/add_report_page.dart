@@ -28,7 +28,7 @@ class _AddReportPageState extends State<AddReportPage> {
   TextEditingController _contID = TextEditingController();
 
   File? _image;
-  String? _location;
+  late String? _location;
   TextEditingController _textEditingController = TextEditingController();
 
   @override
@@ -76,24 +76,13 @@ class _AddReportPageState extends State<AddReportPage> {
           SizedBox(height: 16),
           Button(
             'Tirar foto',
-            () => _getImage(),
+                () => _getImage(),
             colorBG: AppColors.button,
           ),
-          SizedBox(height: 16),
-          if (_location != null)
-            Text(
-              'Localização: $_location',
-              style: TextStyle(fontSize: 18),
-            ),
-          Button(
-            'Obter localização',
-            () => _getLocation(),
-            colorBG: AppColors.button,
-          ),
-          SizedBox(height: 64),
+          SizedBox(height: 120),
           Button(
             'Registrar Report',
-            () => _postReport(),
+                () => _postReport(),
             colorBG: AppColors.button,
           ),
           SelectableText(str),
@@ -104,25 +93,37 @@ class _AddReportPageState extends State<AddReportPage> {
 
   Future<void> _getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('Imagem não capturada');
-      }
-    });
+    try{
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        } else {
+          print('Imagem não capturada');
+        }
+      });
+    } catch (e){
+      Get.snackbar(
+        'Falhou!',
+        'Não foi possível obter posição',
+        colorText: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,);
+      print('Erro ao capturar foto: $e');
+    }
   }
 
   Future<void> _getLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-
       setState(() {
-        _location =
-            'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+        _location = '${position.latitude}, ${position.longitude}';
       });
     } catch (e) {
+      Get.snackbar(
+        'Falhou!',
+        'Não foi possível obter posição',
+        colorText: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,);
       print('Erro ao obter localização: $e');
     }
   }
@@ -156,7 +157,7 @@ class _AddReportPageState extends State<AddReportPage> {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String fileName = 'report_$timestamp.jpg';
 
-    Reference arquivo = fbStorage.ref().child("$fileName");
+    Reference arquivo = fbStorage.ref().child("reports_photos/$fileName");
 
     UploadTask task = arquivo.putFile(_image!);
 
@@ -173,10 +174,15 @@ class _AddReportPageState extends State<AddReportPage> {
   }
 
   Future<void> _obterUrl(TaskSnapshot taskSnapshot, String fileName) async {
-    String url = await taskSnapshot.ref.getDownloadURL();
-    setState(() {
-      _url = url;
-    });
+    try{
+      String url = await taskSnapshot.ref.getDownloadURL();
+      print("Url: $url");
+      setState(() {
+        _url = url;
+      });
+    } catch(e) {
+      print("Não foi possivel obter o link: $e");
+    }
   }
 
   @override
@@ -185,3 +191,42 @@ class _AddReportPageState extends State<AddReportPage> {
     super.dispose();
   }
 }
+
+/*
+
+  Future<void> _getImage() async {
+
+  }
+
+  Future<void> _uploadImage() async {
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String fileName = 'report_$timestamp.jpg';
+
+    Reference arquivo = fbStorage.ref().child("reports_photos/$fileName");
+
+    UploadTask task = arquivo.putFile(_image!);
+
+
+    task.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+      if (taskSnapshot.state == TaskState.running) {
+        print('Carregando...');
+        setState(() {});
+      } else if (taskSnapshot.state == TaskState.success) {
+        _obterUrl(taskSnapshot, fileName);
+        setState(() {});
+      } else if (taskSnapshot.state == TaskState.error) {
+        Get.snackbar(
+            'Falhou!',
+            'Não foi possível recuperar o URL.',
+            colorText: Colors.red,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: Duration(seconds: 6),);
+        setState(() {});
+      }
+    });
+  }
+
+
+
+}
+*/

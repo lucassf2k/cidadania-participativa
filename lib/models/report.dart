@@ -1,4 +1,4 @@
-class Report{
+class Report {
   late String? _id;
   late String? _desc;
   late var _date;

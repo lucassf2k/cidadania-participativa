@@ -1,13 +1,13 @@
-import 'package:cidadania_participativa/controllers/ReportController.dart';
+//import 'package:cidadania_participativa/controllers/ReportController.dart';
 import 'package:cidadania_participativa/core/button.dart';
-import 'package:cidadania_participativa/firebase/facade_firebase_service.dart';
 import 'package:cidadania_participativa/models/report.dart';
 import 'package:cidadania_participativa/firebase/facade_firebase_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../core/app_colors.dart';
 
@@ -18,30 +18,47 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   final fbFirestore = FacadeFirebaseFirestore();
-  final _firestoreService = FacadeFirebaseService();
+
   FirebaseStorage fbStorage = FirebaseStorage.instance;
 
   late String str = "";
-  late String _url = "";
+  late String? _location;
   late List<Report> reps = [];
+
 
   @override
   void initState() {
     super.initState();
     loadReports();
+    _requestLocationPermission();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    final permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      _getLocation();
+    } else {
+      Get.snackbar(
+        'Permissão negada',
+        'Você negou a permissão de localização.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ReportController());
+    //final controller = Get.put(ReportController());
 
     return DefaultTabController(
         length: 3,
         child: Scaffold(
             appBar: AppBar(
-              title: const Text("Cidadania Parcipativa"),
+              title: const Text("Cidadania Participativa"),
               backgroundColor: AppColors.menu,
               bottom: const TabBar(
+                indicatorColor: AppColors.background,
                 tabs: [
                   Tab(text: 'Seus Reportes'),
                   Tab(text: 'Recentes'),
@@ -50,6 +67,7 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ),
             body: Container(
+              color: AppColors.background,
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: TabBarView(
                 children: [
@@ -115,85 +133,109 @@ class _MenuPageState extends State<MenuPage> {
                           ));
                     },
                   ),
-                  /*ListView.builder(
-                    itemCount: reps.length,
-                    itemBuilder: (context, index) {
-                      Report report = reps[index];
-
-                      DateTime currentDate = DateTime.now();
-
-                      DateTime reportDate = DateTime.parse(
-                          DateFormat('yyyy/MM/dd HH:mm')
-                              .format(report.date)
-                      );
-
-                      bool isToday = reportDate.year == currentDate.year &&
-                          reportDate.month == currentDate.month &&
-                          reportDate.day == currentDate.day;
-
-                      if (isToday) {
-                        return Container(
-                          child: Column(
-                            children: [
-                              _retornaImagem(report.photo),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                '${report.desc}',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Align(
-                                alignment: Alignment.bottomRight,
-                                child: Text('Postado em: ${report.date.toString()}'),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              )
-                            ],
-                          ),
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),*/
-
-                  const Center(child: Text('Conteúdo da Aba 3')),
+                  Center(
+                    child: _mapa(),
+                  )
                 ],
               ),
             ),
-            floatingActionButton: Button('+', () => _onClickAddReport())));
+            floatingActionButton: Button('+', () => Get.toNamed('add_report_page'))));
+
   }
 
-  Future<void> _onClickAddReport() async {
-    Report rep = Report();
-    //str = await fbFirestore.createReport(rep);
 
-    setState(() {});
+  _mapa(){
+    List<Marker> map = [];
+    for(int i = 0; i < reps.length; i++){
+      List<String> loc = reps[i].geolocal.split(',');
+      double? lat = double.tryParse(loc[0]);
+      double? long = double.tryParse(loc[1]);
+      LatLng local = LatLng(lat ?? 51.0, long ?? 0.0);
 
-    Get.toNamed('add_report_page');
+      map.add(Marker(
+            point: local,
+            builder: (ctx) => Icon(
+              Icons.location_on,
+              size: 40.0,
+              color: Colors.yellowAccent,
+            ),
+          )
+      );
+    }
+
+    List<String>? loc = _location?.split(',');
+    double? lat = double.tryParse(loc![0]);
+    double? long = double.tryParse(loc[1]);
+    LatLng local = LatLng(lat ?? 51.0, long ?? 0.0);
+
+    map.add(Marker(
+      point: local,
+      builder: (ctx) => Icon(
+        Icons.location_on,
+        size: 40.0,
+        color: Colors.redAccent,
+      ),
+    ));
+
+    return Center(
+      child: FlutterMap(
+        options: MapOptions(
+          center: local,
+          zoom: 16.0,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            subdomains: [
+              'a',
+              'b',
+              'c'
+            ],
+          ),
+          MarkerLayer(
+              markers: map,
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> loadReports() async {
-    List<Report> reports = await fbFirestore.readReport();
+    try{
+      List<Report> reports = await fbFirestore.readReport();
 
-    setState(() {
-      reps = reports;
-    });
+      setState(() {
+        reps = reports;
+      });
+    } catch (e){
+      Get.snackbar(
+        'Falhou!',
+        'Não foi possível carregar os reports',
+        colorText: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+
+      print('Erro ao carregar reports: $e');
+    }
+
+
   }
 
-  Future<void> _obterUrl(TaskSnapshot taskSnapshot, String fileName) async {
-    String url = await taskSnapshot.ref.getDownloadURL();
-    setState(() {
-      _url = url;
-    });
+  Future<void> _getLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _location = '${position.latitude}, ${position.longitude}';
+      });
+    } catch (e) {
+      Get.snackbar(
+        'Falhou!',
+        'Não foi possível obter posição',
+        colorText: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,);
+      print('Erro ao obter localização: $e');
+    }
   }
 
   Image _retornaImagem(String str) {

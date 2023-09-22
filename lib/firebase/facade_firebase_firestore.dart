@@ -12,8 +12,7 @@ class FacadeFirebaseFirestore
 
     QuerySnapshot querySnapshot = await firestore.collection("report").get();
 
-    for( DocumentSnapshot item in querySnapshot.docs )
-    {
+    for( DocumentSnapshot item in querySnapshot.docs ) {
       Map<String, dynamic>? map = item.data() as Map<String, dynamic>?;
       Report report = Report.fromJson(map!);
       report.id = item.id;
