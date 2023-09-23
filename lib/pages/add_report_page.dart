@@ -57,7 +57,7 @@ class _AddReportPageState extends State<AddReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cidadania Parcipativa"),
+        title: const Text("Cidadania Participativa"),
         backgroundColor: AppColors.menu,
       ),
       body: ListView(
@@ -74,26 +74,34 @@ class _AddReportPageState extends State<AddReportPage> {
             maxLines: 5,
           ),
           SizedBox(height: 16),
-          Button(
-            'Tirar foto',
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(height: 30),
+              _image == null
+                  ? Text('Nenhuma imagem foi selecionada')
+                  : Text('$_image!.path', maxLines: 1,),
+              Button(
+                'Tirar foto',
                 () => _getImage(),
-            colorBG: AppColors.button,
+                colorBG: AppColors.button,
+              ),
+            ],
           ),
-          SizedBox(height: 120),
+          SizedBox(height: 240),
           Button(
             'Registrar Report',
-                () => _postReport(),
+            () => _postReport(),
             colorBG: AppColors.button,
           ),
-          SelectableText(str),
         ],
       ),
     );
   }
 
   Future<void> _getImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    try{
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    try {
       setState(() {
         if (pickedFile != null) {
           _image = File(pickedFile.path);
@@ -101,12 +109,13 @@ class _AddReportPageState extends State<AddReportPage> {
           print('Imagem não capturada');
         }
       });
-    } catch (e){
+    } catch (e) {
       Get.snackbar(
         'Falhou!',
         'Não foi possível obter posição',
         colorText: Colors.red,
-        snackPosition: SnackPosition.BOTTOM,);
+        snackPosition: SnackPosition.BOTTOM,
+      );
       print('Erro ao capturar foto: $e');
     }
   }
@@ -123,7 +132,8 @@ class _AddReportPageState extends State<AddReportPage> {
         'Falhou!',
         'Não foi possível obter posição',
         colorText: Colors.red,
-        snackPosition: SnackPosition.BOTTOM,);
+        snackPosition: SnackPosition.BOTTOM,
+      );
       print('Erro ao obter localização: $e');
     }
   }
@@ -161,28 +171,37 @@ class _AddReportPageState extends State<AddReportPage> {
 
     UploadTask task = arquivo.putFile(_image!);
 
-    task.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
-      if (taskSnapshot.state == TaskState.running) {
-        setState(() {});
-      } else if (taskSnapshot.state == TaskState.success) {
-        _obterUrl(taskSnapshot, fileName); // Passar o nome do arquivo gerado
-        setState(() {});
-      } else if (taskSnapshot.state == TaskState.error) {
-        setState(() {});
+    task.snapshotEvents.listen((taskSnapshot) async {
+      switch (taskSnapshot.state) {
+        case TaskState.running:
+          final progress =
+              100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+          print("$progress% Completo.");
+          setState(() {});
+          break;
+        case TaskState.paused:
+          setState(() {});
+          break;
+        case TaskState.success:
+          try {
+            String url = await taskSnapshot.ref.getDownloadURL();
+            print("Url: $url");
+            setState(() {
+              _url = url;
+            });
+          } catch (e) {
+            print("Não foi possivel obter o link: $e");
+          }
+          break;
+        case TaskState.canceled:
+          setState(() {});
+          break;
+        case TaskState.error:
+          print("falha no upload");
+          setState(() {});
+          break;
       }
     });
-  }
-
-  Future<void> _obterUrl(TaskSnapshot taskSnapshot, String fileName) async {
-    try{
-      String url = await taskSnapshot.ref.getDownloadURL();
-      print("Url: $url");
-      setState(() {
-        _url = url;
-      });
-    } catch(e) {
-      print("Não foi possivel obter o link: $e");
-    }
   }
 
   @override
@@ -191,42 +210,3 @@ class _AddReportPageState extends State<AddReportPage> {
     super.dispose();
   }
 }
-
-/*
-
-  Future<void> _getImage() async {
-
-  }
-
-  Future<void> _uploadImage() async {
-    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    String fileName = 'report_$timestamp.jpg';
-
-    Reference arquivo = fbStorage.ref().child("reports_photos/$fileName");
-
-    UploadTask task = arquivo.putFile(_image!);
-
-
-    task.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
-      if (taskSnapshot.state == TaskState.running) {
-        print('Carregando...');
-        setState(() {});
-      } else if (taskSnapshot.state == TaskState.success) {
-        _obterUrl(taskSnapshot, fileName);
-        setState(() {});
-      } else if (taskSnapshot.state == TaskState.error) {
-        Get.snackbar(
-            'Falhou!',
-            'Não foi possível recuperar o URL.',
-            colorText: Colors.red,
-            snackPosition: SnackPosition.BOTTOM,
-            duration: Duration(seconds: 6),);
-        setState(() {});
-      }
-    });
-  }
-
-
-
-}
-*/

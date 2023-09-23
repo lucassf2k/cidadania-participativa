@@ -16,13 +16,13 @@ void main() async {
 
 class Main extends StatelessWidget {
   const Main({super.key});
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      //initialRoute: '/login_page',
-      initialRoute: '/menu_page',
+      initialRoute: '/login_page',
+      //initialRoute: '/menu_page',
       getPages: [
         GetPage(name: '/login_page', page: () => const LoginPage()),
         GetPage(name: '/menu_page', page: () => MenuPage()),
