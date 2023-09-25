@@ -80,7 +80,7 @@ class _AddReportPageState extends State<AddReportPage> {
               SizedBox(height: 30),
               _image == null
                   ? Text('Nenhuma imagem foi selecionada')
-                  : Text('$_image!.path', maxLines: 1,),
+                  : Text('Imagem: ${File(_image!.path).toString()}', maxLines: 1,),
               Button(
                 'Tirar foto',
                 () => _getImage(),
@@ -138,7 +138,7 @@ class _AddReportPageState extends State<AddReportPage> {
     }
   }
 
-  Future<void> _postReport() async {
+  /*Future<void> _postReport() async {
     if (_textEditingController.text.isEmpty) {
       return;
     }
@@ -147,23 +147,128 @@ class _AddReportPageState extends State<AddReportPage> {
       DateTime _now = DateTime.now();
       String _formattedDateTime = DateFormat('dd/MM/yyyy HH:mm').format(_now);
 
-      _uploadImage();
+      await _uploadImage();
+      if(_url.isNotEmpty){
+        Report rp = Report(
+            id: _contID.text,
+            desc: _textEditingController.text,
+            photo: _url,
+            geolocal: _location,
+            date: _formattedDateTime);
 
-      Report rp = Report(
+        str = await fbFirestore.createReport(rp);
+
+        setState(() {});
+        Get.toNamed('menu_page');
+      } else {
+        Get.snackbar(
+          'Falhou',
+          'Não foi possível obter a URL da imagem.',
+          colorText: Colors.red,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+
+    }
+  }*/
+
+  Future<void> _postReport() {
+    if (_textEditingController.text.isEmpty) {
+      return Future.value(); // Retorna uma Future vazia se a descrição estiver vazia
+    }
+
+    if (_image != null && _location != null) {
+      DateTime _now = DateTime.now();
+      String _formattedDateTime = DateFormat('dd/MM/yyyy HH:mm').format(_now);
+
+      return _uploadImage().then((_) {
+        Report rp = Report(
           id: _contID.text,
           desc: _textEditingController.text,
           photo: _url,
           geolocal: _location,
-          date: _formattedDateTime);
+          date: _formattedDateTime,
+        );
 
-      str = await fbFirestore.createReport(rp);
+        return fbFirestore.createReport(rp).then((_) {
+          Get.snackbar(
+            'Sucesso',
+            'Report registrado com sucesso!',
+            colorText: Colors.green,
+            snackPosition: SnackPosition.BOTTOM,
+          );
 
-      setState(() {});
-      Get.toNamed('menu_page');
+          Get.toNamed('menu_page');
+        }).catchError((e) {
+          Get.snackbar(
+            'Erro',
+            'Erro ao registrar o report no Firebase Firestore: $e',
+            colorText: Colors.red,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        });
+      }).catchError((e) {
+        print(e);
+        Get.snackbar(
+          'Erro',
+          'Erro ao fazer o upload da imagem!',
+          colorText: Colors.red,
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Report rp = Report(
+          id: _contID.text,
+          desc: _textEditingController.text,
+          photo: _url,
+          geolocal: _location,
+          date: _formattedDateTime,
+        );
+
+        return fbFirestore.createReport(rp).then((_) {
+          Get.snackbar(
+            'Sucesso',
+            'Report registrado com sucesso!',
+            colorText: Colors.green,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+
+          Get.toNamed('menu_page');
+        }).catchError((e) {
+          Get.snackbar(
+            'Erro',
+            'Erro ao registrar o report no Firebase Firestore: $e',
+            colorText: Colors.red,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        });
+
+      });
     }
+
+    return Future.value(); // Retorna uma Future vazia se _image ou _location forem nulos
   }
 
   Future<void> _uploadImage() async {
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String fileName = 'report_$timestamp.jpg';
+
+    Reference arquivo = fbStorage.ref().child("reports_photos/$fileName");
+
+    UploadTask task = arquivo.putFile(_image!);
+
+    try {
+      final TaskSnapshot taskSnapshot = await task;
+      final String url = await taskSnapshot.ref.getDownloadURL();
+
+      setState(() {
+        _url = url;
+      });
+    } catch (e) {
+      print("Erro durante o upload da imagem: $e");
+      throw e;
+    }
+  }
+
+  /*Future<void> _uploadImage() async {
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     String fileName = 'report_$timestamp.jpg';
 
@@ -202,7 +307,7 @@ class _AddReportPageState extends State<AddReportPage> {
           break;
       }
     });
-  }
+  }*/
 
   @override
   void dispose() {

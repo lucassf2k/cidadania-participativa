@@ -1,4 +1,3 @@
-//import 'package:cidadania_participativa/controllers/ReportController.dart';
 import 'dart:convert';
 
 import 'package:cidadania_participativa/core/button.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 
@@ -28,13 +28,12 @@ class _MenuPageState extends State<MenuPage> {
   String _postalCode = '';
   String str = "";
   String? _location = "";
-  late List<Report> reps = [];
+  List<Report> reps = [];
 
   @override
   void initState() {
     super.initState();
     _requestLocationPermission();
-    loadReports();
   }
 
   Future<void> _requestLocationPermission() async {
@@ -42,6 +41,7 @@ class _MenuPageState extends State<MenuPage> {
     if (permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse) {
       _getLocation();
+      loadReports();
     } else {
       Get.snackbar(
         'Permissão negada',
@@ -78,74 +78,43 @@ class _MenuPageState extends State<MenuPage> {
                   ListView.builder(
                     itemCount: reps.length,
                     itemBuilder: (context, index) {
-                      Report report = reps[index];
-                      return Container(
-                          child: Column(
-                        children: [
-                          _retornaImagem(report.photo),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            '${report.desc}',
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          _local(report.geolocal),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child:
-                                Text('Postado em: ${report.date.toString()}'),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          )
-                        ],
-                      ));
+                      if(reps.isEmpty){
+                        return SizedBox();
+                      } else {
+                        Report report = reps[index];
+                        return Container(
+                            child: Column(
+                              children: [
+                                _retornaImagem(report.photo),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  '${report.desc}',
+                                  style: const TextStyle(
+                                      fontSize: 24, fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                _local(report.geolocal),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child:
+                                  Text('Postado em: ${report.date.toString()}'),
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                )
+                              ],
+                            ));  
+                      }
                     },
                   ),
-                  ListView.builder(
-                    itemCount: reps.length,
-                    itemBuilder: (context, index) {
-                      Report report = reps[index];
-                      return Container(
-                          child: Column(
-                        children: [
-                          _retornaImagem(report.photo),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            '${report.desc}',
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          _local(report.geolocal),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child:
-                                Text('Postado em: ${report.date.toString()}'),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          )
-                        ],
-                      )
-                      );
-                    },
-                  ),
+                  _recentes(),
                   _mapa(),
                 ],
               ),
@@ -155,6 +124,59 @@ class _MenuPageState extends State<MenuPage> {
               () => Get.toNamed('add_report_page'),
               colorBG: AppColors.button,
             )));
+  }
+
+  _recentes(){
+    DateTime _now = DateTime.now();
+    DateFormat format = DateFormat('dd/MM/yyyy HH:mm');
+
+    return ListView.builder(
+      itemCount: reps.length,
+      itemBuilder: (context, index) {
+        if(reps.isEmpty){
+          return SizedBox();
+        } else {
+          Report report = reps[index];
+
+          DateTime dateReport = format.parse(report.date);
+
+          if(dateReport.day == _now.day
+          && dateReport.month == _now.month
+          && dateReport.year == _now.year){
+            return Container(
+                child: Column(
+                  children: [
+                    _retornaImagem(report.photo),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '${report.desc}',
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    _local(report.geolocal),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child:
+                      Text('Postado em: ${report.date.toString()}'),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    )
+                  ],
+                ));
+          }
+            return Container(height: 0);
+        }
+      },
+    );
   }
 
   _mapa() {
@@ -172,12 +194,21 @@ class _MenuPageState extends State<MenuPage> {
           size: 40.0,
           color: Colors.yellowAccent,
         ),
+        anchorPos: AnchorPos.align(AnchorAlign.top),
       ));
     }
 
     List<String>? loc = _location?.split(',');
-    double? lat = double.tryParse(loc![0]);
-    double? long = double.tryParse(loc[1]);
+    double? lat;
+    double? long;
+
+    if(loc != null && loc.length >= 2){
+      lat = double.tryParse(loc[0]);
+      long = double.tryParse(loc[1]);
+    } else {
+      lat = 51.0;
+      long = 0.0;
+    }
     LatLng local = LatLng(lat ?? 51.0, long ?? 0.0);
 
     map.add(Marker(
@@ -187,10 +218,10 @@ class _MenuPageState extends State<MenuPage> {
         size: 40.0,
         color: Colors.redAccent,
       ),
+      anchorPos: AnchorPos.align(AnchorAlign.top),
     ));
 
-    return Center(
-      child: FlutterMap(
+    return FlutterMap(
         options: MapOptions(
           center: local,
           zoom: 16.0,
@@ -206,8 +237,7 @@ class _MenuPageState extends State<MenuPage> {
             markers: map,
           ),
         ],
-      ),
-    );
+      );
   }
 
   _local(String coordenates) {
