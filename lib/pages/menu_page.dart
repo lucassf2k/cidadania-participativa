@@ -78,39 +78,39 @@ class _MenuPageState extends State<MenuPage> {
                   ListView.builder(
                     itemCount: reps.length,
                     itemBuilder: (context, index) {
-                      if(reps.isEmpty){
+                      if (reps.isEmpty) {
                         return SizedBox();
                       } else {
                         Report report = reps[index];
                         return Container(
                             child: Column(
-                              children: [
-                                _retornaImagem(report.photo),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  '${report.desc}',
-                                  style: const TextStyle(
-                                      fontSize: 24, fontWeight: FontWeight.w600),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                _local(report.geolocal),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child:
+                          children: [
+                            _retornaImagem(report.photo),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              '${report.desc}',
+                              style: const TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            _local(report.geolocal),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child:
                                   Text('Postado em: ${report.date.toString()}'),
-                                ),
-                                const SizedBox(
-                                  height: 30,
-                                )
-                              ],
-                            ));  
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            )
+                          ],
+                        ));
                       }
                     },
                   ),
@@ -126,54 +126,53 @@ class _MenuPageState extends State<MenuPage> {
             )));
   }
 
-  _recentes(){
+  _recentes() {
     DateTime _now = DateTime.now();
     DateFormat format = DateFormat('dd/MM/yyyy HH:mm');
 
     return ListView.builder(
       itemCount: reps.length,
       itemBuilder: (context, index) {
-        if(reps.isEmpty){
+        if (reps.isEmpty) {
           return SizedBox();
         } else {
           Report report = reps[index];
 
           DateTime dateReport = format.parse(report.date);
 
-          if(dateReport.day == _now.day
-          && dateReport.month == _now.month
-          && dateReport.year == _now.year){
+          if (dateReport.day == _now.day &&
+              dateReport.month == _now.month &&
+              dateReport.year == _now.year) {
             return Container(
                 child: Column(
-                  children: [
-                    _retornaImagem(report.photo),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      '${report.desc}',
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    _local(report.geolocal),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child:
-                      Text('Postado em: ${report.date.toString()}'),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    )
-                  ],
-                ));
+              children: [
+                _retornaImagem(report.photo),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '${report.desc}',
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                _local(report.geolocal),
+                const SizedBox(
+                  height: 5,
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text('Postado em: ${report.date.toString()}'),
+                ),
+                const SizedBox(
+                  height: 30,
+                )
+              ],
+            ));
           }
-            return Container(height: 0);
+          return Container(height: 0);
         }
       },
     );
@@ -202,7 +201,7 @@ class _MenuPageState extends State<MenuPage> {
     double? lat;
     double? long;
 
-    if(loc != null && loc.length >= 2){
+    if (loc != null && loc.length >= 2) {
       lat = double.tryParse(loc[0]);
       long = double.tryParse(loc[1]);
     } else {
@@ -222,22 +221,22 @@ class _MenuPageState extends State<MenuPage> {
     ));
 
     return FlutterMap(
-        options: MapOptions(
-          center: local,
-          zoom: 16.0,
-          maxZoom: 18.0,
-          minZoom: 13.0,
+      options: MapOptions(
+        center: local,
+        zoom: 16.0,
+        maxZoom: 18.0,
+        minZoom: 13.0,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          subdomains: ['a', 'b', 'c'],
         ),
-        children: [
-          TileLayer(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c'],
-          ),
-          MarkerLayer(
-            markers: map,
-          ),
-        ],
-      );
+        MarkerLayer(
+          markers: map,
+        ),
+      ],
+    );
   }
 
   _local(String coordenates) {
@@ -248,17 +247,13 @@ class _MenuPageState extends State<MenuPage> {
     if (lat != null && long != null) {
       _reverseGeocode(lat, long);
       return Align(
-        alignment: Alignment.centerLeft,
-        child: Text('Local: $_street, $_neighborhood, $_postalCode')
-      );
+          alignment: Alignment.centerLeft,
+          child: Text('Local: $_street, $_neighborhood, $_postalCode'));
     } else {
       return Align(
           alignment: Alignment.centerLeft,
-          child: Text('Local: Impossível encontrar local!')
-      );
-
+          child: Text('Local: Impossível encontrar local!'));
     }
-
   }
 
   Future<void> _reverseGeocode(double latitude, double longitude) async {
@@ -323,9 +318,9 @@ class _MenuPageState extends State<MenuPage> {
   Image _retornaImagem(String str) {
     if (str.isEmpty) {
       return Image.asset('assets/image-not-found.png',
-          height: 480, width: 480, fit: BoxFit.cover);
+          height: 320, width: 320, fit: BoxFit.cover);
     } else {
-      return Image.network(str, fit: BoxFit.cover);
+      return Image.network(str, height: 320, width: 320, fit: BoxFit.contain);
     }
   }
 }
